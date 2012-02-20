@@ -4,20 +4,27 @@
     <meta charset=utf-8/>
     <title>Sample</title>
     <script type="text/javascript">
+      var ctx;
 
-      function main() {
-        var elmTarget = document.getElementById('target');
-        var ctx = elmTarget.getContext('2d');
-
-        ctx.fillStyle = 'rgb(255, 0, 0)';
-        ctx.fillRect(0, 0, 20, 20);
+      function load() {
+          var elmTarget = document.getElementById('target');
+          ctx = elmTarget.getContext('2d');
+          ctx.fillStyle = 'rgb(255, 0, 0)';
       }
 
+      function paint() {
+          ctx.fillRect(0, 0, 20, 20);
+      }
+
+      function clean() {
+          ctx.clearRect(0, 0, 200, 400);
+      }
     </script>
   </head>
 
-  <body>
+  <body onload="load()">
     <canvas id="target" style="border: 5px solid gray" width="200" height="400"></canvas>
-    <input type="button" value="click" onclick="main()" />
+    <input type="button" value="paint" onclick="paint()" />
+    <input type="button" value="clear" onclick="clean()" />
   </body>
 </html>
