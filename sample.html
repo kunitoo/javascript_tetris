@@ -10,6 +10,7 @@
         [0, 1],
         [0, 1]
       ];
+      var posx = 0, posy = 0;
 
       function load() {
           var elmTarget = document.getElementById('target');
@@ -18,13 +19,15 @@
       }
 
       function paint() {
+          ctx.clearRect(0, 0, 200, 400);
           for (var y = 0; y < block.length; y++) {
               for (var x = 0; x < block[y].length; x++) {
                   if (block[y][x]) {
-                      ctx.fillRect(x * 20, y * 20, 20, 20);
+                      ctx.fillRect((x + posx) * 20, (y + posy) * 20, 20, 20);
                   }
               }
           }
+          posy = posy + 1;
       }
 
       function clean() {
@@ -36,6 +39,5 @@
   <body onload="load()">
     <canvas id="target" style="border: 5px solid gray" width="200" height="400"></canvas>
     <input type="button" value="paint" onclick="paint()" />
-    <input type="button" value="clear" onclick="clean()" />
   </body>
 </html>
