@@ -20,15 +20,20 @@
           setInterval(paint, 200);
       }
 
-      function paint() {
-          ctx.clearRect(0, 0, 200, 400);
-          for (var y = 0; y < block.length; y++) {
-              for (var x = 0; x < block[y].length; x++) {
-                  if (block[y][x]) {
-                      ctx.fillRect((x + posx) * 20, (y + posy) * 20, 20, 20);
+      function paintMatrix(matrix, offsetx, offsety) {
+          for (var y = 0; y < matrix.length; y++) {
+              for (var x = 0; x < matrix[y].length; x++) {
+                  if (matrix[y][x]) {
+                      ctx.fillRect((x + offsetx) * 20, (y + offsety) * 20, 20, 20);
                   }
               }
           }
+          posy = posy + 1;
+      }
+
+      function paint() {
+          ctx.clearRect(0, 0, 200, 400);
+          paintMatrix(block, posx, posy);
           posy = posy + 1;
       }
 
