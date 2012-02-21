@@ -16,6 +16,8 @@
           var elmTarget = document.getElementById('target');
           ctx = elmTarget.getContext('2d');
           ctx.fillStyle = 'rgb(255, 0, 0)';
+
+          setInterval(paint, 200);
       }
 
       function paint() {
@@ -38,6 +40,5 @@
 
   <body onload="load()">
     <canvas id="target" style="border: 5px solid gray" width="200" height="400"></canvas>
-    <input type="button" value="paint" onclick="paint()" />
   </body>
 </html>
