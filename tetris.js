@@ -71,8 +71,3 @@ function paint() {
         posy = 0;
     }
 }
-
-function clean() {
-    ctx.clearRect(0, 0, 200, 400);
-}
-
