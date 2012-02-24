@@ -67,3 +67,25 @@ function paint() {
         posy = 0;
     }
 }
+
+function key(keyCode) {
+    switch(keyCode) {
+    case 39:
+        if (!check(map, block, posx + 1, posy)) return;
+        posx = posx + 1;
+        break;
+    case 37:
+        if (!check(map, block, posx - 1, posy)) return;
+        posx = posx - 1;
+        break;
+    case 40:
+        if (!check(map, block, posx, posy - 1)) return;
+        posy = posy - 1;
+        break;
+    default:
+        return;
+    }
+    ctx.clearRect(0, 0, 200, 400);
+    paintMatrix(block, posx, posy, 'rgb(255, 0, 0)');
+    paintMatrix(map, 0, 0, 'rgb(128, 128, 128)');
+}
