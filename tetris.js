@@ -41,9 +41,7 @@ function check(map, block, offsetx, offsety) {
     }
     for (var y = 0; y < block.length; y++) {
         for (var x = 0; x < block[y].length; x++) {
-            if (block[y][x] && map[y + offsety][x + offsetx]) {
-                return false;
-            }
+            if (block[y][x] && map[y + offsety][x + offsetx]) return false;
         }
     }
     return true;
@@ -52,9 +50,7 @@ function check(map, block, offsetx, offsety) {
 function mergeMatrix(map, block, offsetx, offsety) {
     for (var y = 0; y < mapHeight; y++) {
         for (var x = 0; x < mapWidth; x++) {
-            if (block[y - offsety] && block[y - offsety][x - offsetx]) {
-                map[y][x]++;
-            }
+            if (block[y - offsety] && block[y - offsety][x - offsetx]) map[y][x]++;
         }
     }
 }
