@@ -31,7 +31,6 @@ function paintMatrix(matrix, offsetx, offsety, color) {
             }
         }
     }
-    posy = posy + 1;
 }
 function check(map, block, offsetx, offsety) {
     if (offsetx < 0 || offsety < 0 ||
@@ -79,8 +78,9 @@ function key(keyCode) {
         posx = posx - 1;
         break;
     case 40:
-        if (!check(map, block, posx, posy - 1)) return;
-        posy = posy - 1;
+        var y = posy;
+        while (check(map, block, posy, y)) { y++; }
+        posy = y - 1;
         break;
     default:
         return;
