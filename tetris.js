@@ -6,168 +6,168 @@ Array.prototype.each = function(fn) {
     return result;
 };
 
+var Matrix = function(matrix) {
+    this.matrix = matrix;
+    this.height = matrix.length;
+    this.width = matrix[0].length;
+};
+
+Matrix.prototype.each = function(fn) {
+    return this.matrix.each(fn);
+};
+
+Matrix.prototype.get = function(x, y) {
+    return (this.matrix[y] && this.matrix[y][x]) || 0;
+};
+
+Matrix.prototype.paint = function(offsetx, offsety, color) {
+    ctx.fillStyle = color;
+    this.matrix.each(function(row, y) {
+                         row.each(function(val, x) {
+                                      if (val) ctx.fillRect((x + offsetx) * 20, (y + offsety) * 20, 20, 20);
+                                  });
+                     });
+};
+
+Matrix.prototype.check = function(block, offsetx, offsety) {
+    if (offsetx < 0 || offsety < 0 ||
+        this.height < offsety + block.height ||
+        this.width < offsetx + block.width) {
+        return false;
+    }
+
+    var matrix = this.matrix;
+    var ok = true;
+    block.each(function(row, y) {
+                   row.each(function(val, x) {
+                                if (val && matrix[y + offsety][x + offsetx]) ok = false;
+                            });
+               });
+    return ok;
+};
+
+Matrix.prototype.merge = function(block, offsetx, offsety) {
+    this.matrix.each(function(row, y) {
+                         row.each(function(val, x) {
+                                      row[x] += block.get(x - offsetx, y - offsety);
+                                  });
+                     });
+};
+
+Matrix.prototype.clearRows = function() {
+    var matrix = this.matrix;
+    var width = this.width;
+    matrix.each(function(row, y) {
+                    var full = true;
+                    row.each(function(val, x) {
+                                 if (!val) full = false;
+                             });
+                    if (full) {
+                        matrix.splice(y, 1);
+                        matrix.unshift(new Array(width).each(function() {return 0;}));
+                    }
+                });
+};
+
+Matrix.prototype.rotate = function() {
+    var matrix = this.matrix;
+    return new Matrix(new Array(matrix[0].length).each(function(_, y) {
+                                                           return new Array(matrix.length).each(function(_, x) {
+                                                                                                    return matrix[matrix.length - x - 1][y];
+                                                                                                });
+                                                       }));
+};
+
 var ctx;
 var blocks = [
-    [
-        [1, 1],
-        [0, 1],
-        [0, 1]
-    ],
-    [
-        [1, 1],
-        [1, 0],
-        [1, 0]
-    ],
-    [
-        [1, 1],
-        [1, 1]
-    ],
-    [
-        [1, 0],
-        [1, 1],
-        [1, 0]
-    ],
-    [
-        [1, 0],
-        [1, 1],
-        [0, 1]
-    ],
-    [
-        [0, 1],
-        [1, 1],
-        [1, 0]
-    ],
-    [
-        [1],
-        [1],
-        [1],
-        [1]
-    ]
+    new Matrix([
+                   [1, 1],
+                   [0, 1],
+                   [0, 1]
+               ]),
+    new Matrix([
+                   [1, 1],
+                   [1, 0],
+                   [1, 0]
+               ]),
+    new Matrix([
+                   [1, 1],
+                   [1, 1]
+               ]),
+    new Matrix([
+                   [1, 0],
+                   [1, 1],
+                   [1, 0]
+               ]),
+    new Matrix([
+                   [1, 0],
+                   [1, 1],
+                   [0, 1]
+               ]),
+    new Matrix([
+                   [0, 1],
+                   [1, 1],
+                   [1, 0]
+               ]),
+    new Matrix([
+                   [1],
+                   [1],
+                   [1],
+                   [1]
+               ])
 ];
 var block = blocks[Math.floor(Math.random() * blocks.length)];
 var posx = 0, posy = 0;
 var mapWidth = 10, mapHeight = 20;
 
-var map = new Array(mapHeight).each(function() {
-  return new Array(mapWidth).each(function() { return 0;});
-});
+var map = new Matrix(new Array(20).each(function() {
+                                            return new Array(10).each(function() {return 0;});
+                                        }));
 
 function load() {
     var elmTarget = document.getElementById('target');
     ctx = elmTarget.getContext('2d');
-    ctx.fillStyle = 'rgb(255, 0, 0)';
 
-    map = [];
-    for (var y = 0; y < mapHeight; y++) {
-        map[y] = [];
-        for (var x = 0; x < mapWidth; x++) {
-            map[y][x] = 0;
-        }
-    }
-    setInterval(paint, 200);
-}
+    setInterval(function() {
+                    ctx.clearRect(0, 0, 200, 400);
+                    block.paint(posx, posy, 'rgb(255, 0, 0)');
+                    map.paint(0, 0, 'rgb(128, 128, 128)');
 
-function paintMatrix(matrix, offsetx, offsety, color) {
-    ctx.fillStyle = color;
-
-    matrix.each(function(row, y) {
-      row.each(function(val, x) {
-        if (val) ctx.fillRect((x + offsetx) * 20, (y + offsety) * 20, 20, 20);
-      });
-   });
-}
-function check(map, block, offsetx, offsety) {
-    if (offsetx < 0 || offsety < 0 ||
-        mapHeight < offsety + block.length ||
-        mapWidth < offsetx + block[0].length) {
-        return false;
-    }
-    var ok = true;
-    block.each(function(row, y) {
-      row.each(function(val, x) {
-        if (val && map[y + offsety][x + offsetx]) ok = false;
-      });
-    });
-    return ok;
-}
-
-function mergeMatrix(map, block, offsetx, offsety) {
-    map.each(function(row, y) {
-        row.each(function(val, x) {
-            if (block[y - offsety] && block[y - offsety][x - offsetx]) row[x]++;
-        });
-    });
-}
-
-function clearRows(map) {
-    var fulls = [];
-    for (var y = 0; y < mapHeight; y++) {
-        fulls[y] = true;
-        for (var x = 0; x < mapWidth; x++) {
-            if (!map[y][x]) fulls[y] = false;
-        }
-    }
-    for (var row = 0; row < mapHeight; row++) {
-        if (fulls[row]) {
-            map.splice(row, 1);
-            var newRow = [];
-            for (var i = 0; i < mapWidth; i++) {
-                newRow[i] = 0;
-            }
-            map.unshift(newRow);
-        }
-    }
-}
-
-function paint() {
-    ctx.clearRect(0, 0, 200, 400);
-    paintMatrix(map, 0, 0, 'rgb(128, 128, 128)');
-    paintMatrix(block, posx, posy, 'rgb(255, 0, 0)');
-    if (check(map, block, posx, posy + 1)) {
-        posy = posy + 1;
-    } else {
-        mergeMatrix(map, block, posx, posy);
-        clearRows(map);
-        posx = 0;
-        posy = 0;
-        block = blocks[Math.floor(Math.random() * blocks.length)];
-    }
-}
-
-function rotate(block) {
-    var rotated = [];
-    for (var x = 0; x < block[0].length; x++) {
-        rotated[x] = [];
-        for (var y = 0; y < block.length; y++) {
-            rotated[x][block.length - y - 1] = block[y][x];
-        }
-    }
-    return rotated;
-}
+                    if (map.check(block, posx, posy + 1)) {
+                        posy = posy + 1;
+                    }
+                    else {
+                        map.merge(block, posx, posy);
+                        map.clearRows();
+                        posx = 0; posy = 0;
+                        block = blocks[Math.floor(Math.random() * blocks.length)];
+                    }
+                }, 200);
+};
 
 function key(keyCode) {
     switch(keyCode) {
     case 38:
-        if (!check(map, rotate(block), posx, posy)) return;
-        block = rotate(block);
+        if (!map.check(block.rotate(), posx, posy)) return;
+        block = block.rotate(block);
         break;
     case 39:
-        if (!check(map, block, posx + 1, posy)) return;
+        if (!map.check(block, posx + 1, posy)) return;
         posx = posx + 1;
         break;
     case 37:
-        if (!check(map, block, posx - 1, posy)) return;
+        if (!map.check(block, posx - 1, posy)) return;
         posx = posx - 1;
         break;
     case 40:
         var y = posy;
-        while (check(map, block, posy, y)) { y++; }
+        while (map.check(block, posy, y)) { y++; }
         posy = y - 1;
         break;
     default:
         return;
     }
     ctx.clearRect(0, 0, 200, 400);
-    paintMatrix(block, posx, posy, 'rgb(255, 0, 0)');
-    paintMatrix(map, 0, 0, 'rgb(128, 128, 128)');
+    block.paint(posx, posy, 'rgb(255, 0, 0)');
+    map.paint(0, 0, 'rgb(128, 128, 128)');
 }
