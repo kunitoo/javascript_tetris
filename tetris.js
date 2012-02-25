@@ -1,9 +1,42 @@
 var ctx;
-var block = [
-    [1, 1],
-    [0, 1],
-    [0, 1]
+var blocks = [
+    [
+        [1, 1],
+        [0, 1],
+        [0, 1]
+    ],
+    [
+        [1, 1],
+        [1, 0],
+        [1, 0]
+    ],
+    [
+        [1, 1],
+        [1, 1]
+    ],
+    [
+        [1, 0],
+        [1, 1],
+        [1, 0]
+    ],
+    [
+        [1, 0],
+        [1, 1],
+        [0, 1]
+    ],
+    [
+        [0, 1],
+        [1, 1],
+        [1, 0]
+    ],
+    [
+        [1],
+        [1],
+        [1],
+        [1]
+    ]
 ];
+var block = blocks[Math.floor(Math.random() * blocks.length)];
 var posx = 0, posy = 0;
 var map, mapWidth = 10, mapHeight = 20;
 
@@ -85,6 +118,7 @@ function paint() {
         clearRows(map);
         posx = 0;
         posy = 0;
+        block = blocks[Math.floor(Math.random() * blocks.length)];
     }
 }
 
