@@ -67,8 +67,23 @@ function paint() {
     }
 }
 
+function rotate(block) {
+    var rotated = [];
+    for (var x = 0; x < block[0].length; x++) {
+        rotated[x] = [];
+        for (var y = 0; y < block.length; y++) {
+            rotated[x][block.length - y - 1] = block[y][x];
+        }
+    }
+    return rotated;
+}
+
 function key(keyCode) {
     switch(keyCode) {
+    case 38:
+        if (!check(map, rotate(block), posx, posy)) return;
+        block = rotate(block);
+        break;
     case 39:
         if (!check(map, block, posx + 1, posy)) return;
         posx = posx + 1;
