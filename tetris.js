@@ -1,3 +1,11 @@
+Array.prototype.each = function(fn) {
+    var result = [];
+    for (var i = 0; i < this.length; i++) {
+        result[i] = fn(this[i], i);
+    }
+    return result;
+};
+
 var ctx;
 var blocks = [
     [
@@ -38,7 +46,11 @@ var blocks = [
 ];
 var block = blocks[Math.floor(Math.random() * blocks.length)];
 var posx = 0, posy = 0;
-var map, mapWidth = 10, mapHeight = 20;
+var mapWidth = 10, mapHeight = 20;
+
+var map = new Array(mapHeight).each(function() {
+  return new Array(mapWidth).each(function() { return 0;});
+});
 
 function load() {
     var elmTarget = document.getElementById('target');
@@ -57,13 +69,12 @@ function load() {
 
 function paintMatrix(matrix, offsetx, offsety, color) {
     ctx.fillStyle = color;
-    for (var y = 0; y < matrix.length; y++) {
-        for (var x = 0; x < matrix[y].length; x++) {
-            if (matrix[y][x]) {
-                ctx.fillRect((x + offsetx) * 20, (y + offsety) * 20, 20, 20);
-            }
-        }
-    }
+
+    matrix.each(function(row, y) {
+      row.each(function(val, x) {
+        if (val) ctx.fillRect((x + offsetx) * 20, (y + offsety) * 20, 20, 20);
+      });
+   });
 }
 function check(map, block, offsetx, offsety) {
     if (offsetx < 0 || offsety < 0 ||
@@ -71,20 +82,21 @@ function check(map, block, offsetx, offsety) {
         mapWidth < offsetx + block[0].length) {
         return false;
     }
-    for (var y = 0; y < block.length; y++) {
-        for (var x = 0; x < block[y].length; x++) {
-            if (block[y][x] && map[y + offsety][x + offsetx]) return false;
-        }
-    }
-    return true;
+    var ok = true;
+    block.each(function(row, y) {
+      row.each(function(val, x) {
+        if (val && map[y + offsety][x + offsetx]) ok = false;
+      });
+    });
+    return ok;
 }
 
 function mergeMatrix(map, block, offsetx, offsety) {
-    for (var y = 0; y < mapHeight; y++) {
-        for (var x = 0; x < mapWidth; x++) {
-            if (block[y - offsety] && block[y - offsety][x - offsetx]) map[y][x]++;
-        }
-    }
+    map.each(function(row, y) {
+        row.each(function(val, x) {
+            if (block[y - offsety] && block[y - offsety][x - offsetx]) row[x]++;
+        });
+    });
 }
 
 function clearRows(map) {
