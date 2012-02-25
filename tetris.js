@@ -55,19 +55,22 @@ function mergeMatrix(map, block, offsetx, offsety) {
 }
 
 function clearRows(map) {
+    var fulls = [];
     for (var y = 0; y < mapHeight; y++) {
-        var full = true;
+        fulls[y] = true;
         for (var x = 0; x < mapWidth; x++) {
-            if (!map[y][x]) full = false;
+            if (!map[y][x]) fulls[y] = false;
         }
     }
-    if (full) {
-        map.splice(y, 1);
-        var newRow = [];
-        for (var i = 0; i < mapWidth; i++) {
-            newRow[i] = 0;
+    for (var row = 0; row < mapHeight; row++) {
+        if (fulls[row]) {
+            map.splice(row, 1);
+            var newRow = [];
+            for (var i = 0; i < mapWidth; i++) {
+                newRow[i] = 0;
+            }
+            map.unshift(newRow);
         }
-        map.unshift(newRow);
     }
 }
 
